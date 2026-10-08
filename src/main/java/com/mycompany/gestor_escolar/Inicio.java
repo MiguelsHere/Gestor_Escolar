@@ -6,6 +6,7 @@ package com.mycompany.gestor_escolar;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import javax.swing.JOptionPane;
 
@@ -134,11 +135,25 @@ public class Inicio extends javax.swing.JFrame {
     }//GEN-LAST:event_btnCriarActionPerformed
 
     private void btnGerirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGerirActionPerformed
-        GerirTurmas janelaG = new GerirTurmas();
-        janelaG.setLocationRelativeTo(this);
-        janelaG.setVisible(true);
+        String sql = "SELECT * FROM turma";
 
-        this.dispose();
+        try (Connection conn = Conexao.Ligacao(); PreparedStatement stmt = conn.prepareStatement(sql); ResultSet rs = stmt.executeQuery()) {
+
+            if (!rs.isBeforeFirst()) {
+                JOptionPane.showMessageDialog(this, "Não tem turmas criadas!");
+            } else {
+                GerirTurmas janelaG = new GerirTurmas();
+                janelaG.setLocationRelativeTo(this);
+                janelaG.setVisible(true);
+
+                this.dispose();
+            }
+
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Erro ao carregar turmas: " + e.getMessage());
+        }
+
+
     }//GEN-LAST:event_btnGerirActionPerformed
 
     private void cbAnoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbAnoActionPerformed
