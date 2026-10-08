@@ -22,7 +22,7 @@ public class GerirTurmas extends javax.swing.JFrame {
      */
     public GerirTurmas() {
         initComponents();
-        
+
         carregarTurmas();
     }
 
@@ -101,6 +101,11 @@ public class GerirTurmas extends javax.swing.JFrame {
 
         jButton1.setBackground(new java.awt.Color(153, 0, 0));
         jButton1.setText("Apagar Turma");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
 
         jLabel3.setText("Alunos:");
 
@@ -201,6 +206,25 @@ public class GerirTurmas extends javax.swing.JFrame {
 
         this.dispose();
     }//GEN-LAST:event_btnDisciplinasActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        String sql = "delete FROM turma Where turma_id = ?";
+        
+        int linha = tblTurmas.getSelectedRow();
+        
+        int id = (int) tblTurmas.getValueAt(linha, 0);
+
+        try (Connection conn = Conexao.Ligacao(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+            
+            stmt.setInt(1,id);
+            stmt.execute();
+            
+            carregarTurmas();
+            JOptionPane.showMessageDialog(this, "Turma Apagada ");
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Erro ao apagar turma: " + e.getMessage());
+        }
+    }//GEN-LAST:event_jButton1ActionPerformed
 
     /**
      * @param args the command line arguments
