@@ -4,6 +4,13 @@
  */
 package com.mycompany.gestor_escolar;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+
 /**
  *
  * @author F37094
@@ -15,6 +22,8 @@ public class GerirTurmas extends javax.swing.JFrame {
      */
     public GerirTurmas() {
         initComponents();
+        
+        carregarTurmas();
     }
 
     /**
@@ -28,11 +37,11 @@ public class GerirTurmas extends javax.swing.JFrame {
 
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
-        jButton1 = new javax.swing.JButton();
+        btnVoltar = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         tblTurmas = new javax.swing.JTable();
-        jButton2 = new javax.swing.JButton();
-        jButton3 = new javax.swing.JButton();
+        btnAlunos = new javax.swing.JButton();
+        btnDisciplinas = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -43,10 +52,10 @@ public class GerirTurmas extends javax.swing.JFrame {
         jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         jLabel2.setText("Criado por Jhonatas M© ");
 
-        jButton1.setText("Voltar");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        btnVoltar.setText("Voltar");
+        btnVoltar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                btnVoltarActionPerformed(evt);
             }
         });
 
@@ -71,9 +80,19 @@ public class GerirTurmas extends javax.swing.JFrame {
         });
         jScrollPane1.setViewportView(tblTurmas);
 
-        jButton2.setText("Gerir Alunos");
+        btnAlunos.setText("Gerir Alunos");
+        btnAlunos.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAlunosActionPerformed(evt);
+            }
+        });
 
-        jButton3.setText("Gerir Disciplinas");
+        btnDisciplinas.setText("Gerir Disciplinas");
+        btnDisciplinas.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnDisciplinasActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -85,11 +104,11 @@ public class GerirTurmas extends javax.swing.JFrame {
                     .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 512, Short.MAX_VALUE)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(jButton2)
+                        .addComponent(btnAlunos)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton3)
+                        .addComponent(btnDisciplinas)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jButton1))
+                        .addComponent(btnVoltar))
                     .addComponent(jScrollPane1))
                 .addContainerGap())
         );
@@ -102,9 +121,9 @@ public class GerirTurmas extends javax.swing.JFrame {
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 18, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton1)
-                    .addComponent(jButton2)
-                    .addComponent(jButton3))
+                    .addComponent(btnVoltar)
+                    .addComponent(btnAlunos)
+                    .addComponent(btnDisciplinas))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel2)
                 .addContainerGap())
@@ -113,14 +132,32 @@ public class GerirTurmas extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        
+    private void btnVoltarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVoltarActionPerformed
+
         Inicio janelaI = new Inicio();
         janelaI.setLocationRelativeTo(this);
         janelaI.setVisible(true);
-        
+
         this.dispose();
-    }//GEN-LAST:event_jButton1ActionPerformed
+    }//GEN-LAST:event_btnVoltarActionPerformed
+
+    private void btnAlunosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAlunosActionPerformed
+
+        GerirDisciplinas janelaGD = new GerirDisciplinas();
+        janelaGD.setLocationRelativeTo(this);
+        janelaGD.setVisible(true);
+
+        this.dispose();
+    }//GEN-LAST:event_btnAlunosActionPerformed
+
+    private void btnDisciplinasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDisciplinasActionPerformed
+
+        GerirAlunos janelaGA = new GerirAlunos();
+        janelaGA.setLocationRelativeTo(this);
+        janelaGA.setVisible(true);
+
+        this.dispose();
+    }//GEN-LAST:event_btnDisciplinasActionPerformed
 
     /**
      * @param args the command line arguments
@@ -155,12 +192,37 @@ public class GerirTurmas extends javax.swing.JFrame {
                 new GerirTurmas().setVisible(true);
             }
         });
+
     }
 
+    public void carregarTurmas() {
+        String sql = "SELECT * FROM turma";
+
+        // Pega o modelo que controla os dados da tabela
+        DefaultTableModel modelo
+                = (DefaultTableModel) tblTurmas.getModel();
+
+        // Limpa as linhas que já existem na tabela
+        modelo.setRowCount(0);
+
+        try (Connection conn = Conexao.Ligacao(); PreparedStatement stmt = conn.prepareStatement(sql); ResultSet rs = stmt.executeQuery()) {
+
+            while (rs.next()) {
+                int id = rs.getInt("turma_id");
+                String ano = rs.getString("ano");
+                modelo.addRow(new Object[]{
+                    id,
+                    ano
+                });
+            }
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Erro ao carregar turmas: " + e.getMessage());
+        }
+    }
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
+    private javax.swing.JButton btnAlunos;
+    private javax.swing.JButton btnDisciplinas;
+    private javax.swing.JButton btnVoltar;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JScrollPane jScrollPane1;
