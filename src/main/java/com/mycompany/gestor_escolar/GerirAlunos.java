@@ -207,11 +207,7 @@ public class GerirAlunos extends javax.swing.JFrame {
 
     private void btnAdicionarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAdicionarActionPerformed
 
-        GerirDisciplinas janelaGD = new GerirDisciplinas();
-        janelaGD.setLocationRelativeTo(this);
-        janelaGD.setVisible(true);
-
-        this.dispose();
+        
     }//GEN-LAST:event_btnAdicionarActionPerformed
 
     private void btnAlterarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAlterarActionPerformed
