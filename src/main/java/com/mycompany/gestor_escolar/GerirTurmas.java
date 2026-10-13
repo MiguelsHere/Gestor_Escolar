@@ -42,7 +42,7 @@ public class GerirTurmas extends javax.swing.JFrame {
         tblTurmas = new javax.swing.JTable();
         btnAlunos = new javax.swing.JButton();
         btnDisciplinas = new javax.swing.JButton();
-        jButton1 = new javax.swing.JButton();
+        btnApagar = new javax.swing.JButton();
         cbAno = new javax.swing.JComboBox<>();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -96,11 +96,11 @@ public class GerirTurmas extends javax.swing.JFrame {
             }
         });
 
-        jButton1.setBackground(new java.awt.Color(153, 0, 0));
-        jButton1.setText("Apagar Turma");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        btnApagar.setBackground(new java.awt.Color(153, 0, 0));
+        btnApagar.setText("Apagar Turma");
+        btnApagar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                btnApagarActionPerformed(evt);
             }
         });
 
@@ -122,7 +122,7 @@ public class GerirTurmas extends javax.swing.JFrame {
                     .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 512, Short.MAX_VALUE)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(btnApagar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(btnAlunos, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(btnDisciplinas, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
@@ -146,7 +146,7 @@ public class GerirTurmas extends javax.swing.JFrame {
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(34, 34, 34)
-                        .addComponent(jButton1)
+                        .addComponent(btnApagar)
                         .addGap(18, 18, 18)
                         .addComponent(btnAlunos)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -189,7 +189,7 @@ public class GerirTurmas extends javax.swing.JFrame {
 
     }//GEN-LAST:event_btnDisciplinasActionPerformed
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+    private void btnApagarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnApagarActionPerformed
         String sql = "delete FROM turma Where turma_id = ?";
 
         int linha = tblTurmas.getSelectedRow();
@@ -206,10 +206,11 @@ public class GerirTurmas extends javax.swing.JFrame {
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(this, "Erro ao apagar turma: " + e.getMessage());
         }
-    }//GEN-LAST:event_jButton1ActionPerformed
+    }//GEN-LAST:event_btnApagarActionPerformed
 
     private void cbAnoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbAnoActionPerformed
-        // TODO add your handling code here:
+
+        carregarTurmas();
     }//GEN-LAST:event_cbAnoActionPerformed
 
     /**
@@ -251,15 +252,23 @@ public class GerirTurmas extends javax.swing.JFrame {
     public void carregarTurmas() {
         String sql = "SELECT * FROM turma";
 
-        // Pega o modelo que controla os dados da tabela
-        DefaultTableModel modelo
-                = (DefaultTableModel) tblTurmas.getModel();
+        DefaultTableModel modelo= (DefaultTableModel) tblTurmas.getModel();
 
-        // Limpa as linhas que já existem na tabela
         modelo.setRowCount(0);
+        String anoCb = (String) cbAno.getSelectedItem();
 
-        try (Connection conn = Conexao.Ligacao(); PreparedStatement stmt = conn.prepareStatement(sql); ResultSet rs = stmt.executeQuery()) {
+        boolean filtrar = (anoCb != "Todos os Anos");
 
+        if (filtrar) {
+            sql += " WHERE ano = ?";
+        }
+
+        try (Connection conn = Conexao.Ligacao(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            if (filtrar) {
+                stmt.setString(1, anoCb);
+            }
+            ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
                 int id = rs.getInt("turma_id");
                 String ano = rs.getString("ano");
@@ -274,10 +283,10 @@ public class GerirTurmas extends javax.swing.JFrame {
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAlunos;
+    private javax.swing.JButton btnApagar;
     private javax.swing.JButton btnDisciplinas;
     private javax.swing.JButton btnVoltar;
     private javax.swing.JComboBox<String> cbAno;
-    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JScrollPane jScrollPane1;
