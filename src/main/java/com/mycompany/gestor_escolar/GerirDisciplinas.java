@@ -4,6 +4,13 @@
  */
 package com.mycompany.gestor_escolar;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+
 /**
  *
  * @author F37094
@@ -11,13 +18,14 @@ package com.mycompany.gestor_escolar;
 public class GerirDisciplinas extends javax.swing.JFrame {
 
     private static int idturma;
-    
+
     /**
      * Creates new form GerirDisciplinas
      */
     public GerirDisciplinas(int id) {
         idturma = id;
         initComponents();
+        carregarDisciplinas();
     }
 
     /**
@@ -33,16 +41,16 @@ public class GerirDisciplinas extends javax.swing.JFrame {
         jLabel2 = new javax.swing.JLabel();
         btnVoltar = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
-        tblAlunos = new javax.swing.JTable();
+        tblDisc = new javax.swing.JTable();
         btnApagar = new javax.swing.JButton();
         btnAdicionar = new javax.swing.JButton();
         btnAlterar = new javax.swing.JButton();
         jLabel5 = new javax.swing.JLabel();
-        jCheckBox1 = new javax.swing.JCheckBox();
+        cbOpci = new javax.swing.JCheckBox();
         jLabel7 = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
-        jTextField1 = new javax.swing.JTextField();
-        jTextField2 = new javax.swing.JTextField();
+        txtNome = new javax.swing.JTextField();
+        txtProf = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -60,26 +68,33 @@ public class GerirDisciplinas extends javax.swing.JFrame {
             }
         });
 
-        tblAlunos.setModel(new javax.swing.table.DefaultTableModel(
+        tblDisc.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null}
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
             },
             new String [] {
-                "ID", "Nome", "Professor"
+                "ID", "Nome", "Professor", "Opcional"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.Integer.class, java.lang.String.class, java.lang.String.class
+                java.lang.Integer.class, java.lang.String.class, java.lang.String.class, java.lang.Boolean.class
+            };
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false
             };
 
             public Class getColumnClass(int columnIndex) {
                 return types [columnIndex];
             }
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
         });
-        jScrollPane1.setViewportView(tblAlunos);
+        jScrollPane1.setViewportView(tblDisc);
 
         btnApagar.setBackground(new java.awt.Color(153, 0, 0));
         btnApagar.setText("Apagar Disicplina");
@@ -100,15 +115,27 @@ public class GerirDisciplinas extends javax.swing.JFrame {
 
         jLabel5.setText("Opcional:");
 
-        jCheckBox1.addActionListener(new java.awt.event.ActionListener() {
+        cbOpci.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jCheckBox1ActionPerformed(evt);
+                cbOpciActionPerformed(evt);
             }
         });
 
         jLabel7.setText("Nome:");
 
         jLabel6.setText("Professor:");
+
+        txtNome.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtNomeActionPerformed(evt);
+            }
+        });
+
+        txtProf.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtProfActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -130,7 +157,7 @@ public class GerirDisciplinas extends javax.swing.JFrame {
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 67, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(18, 18, 18)
-                                .addComponent(jCheckBox1)
+                                .addComponent(cbOpci)
                                 .addGap(0, 0, Short.MAX_VALUE))
                             .addGroup(layout.createSequentialGroup()
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
@@ -138,8 +165,8 @@ public class GerirDisciplinas extends javax.swing.JFrame {
                                     .addComponent(jLabel7, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jTextField1)
-                                    .addComponent(jTextField2))))
+                                    .addComponent(txtNome)
+                                    .addComponent(txtProf))))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 280, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
@@ -165,15 +192,15 @@ public class GerirDisciplinas extends javax.swing.JFrame {
                         .addGap(18, 18, 18)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel7)
-                            .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(txtNome, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(18, 18, 18)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel6)
-                            .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(txtProf, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(24, 24, 24)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel5)
-                            .addComponent(jCheckBox1))))
+                            .addComponent(cbOpci))))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jLabel2)
                 .addContainerGap())
@@ -181,6 +208,39 @@ public class GerirDisciplinas extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void carregarDisciplinas() {
+        String sql = "SELECT disciplina_id, nome, professor, e_opcional FROM disciplina WHERE turma_id = ?";
+
+        DefaultTableModel modelo = (DefaultTableModel) tblDisc.getModel();
+
+        modelo.setRowCount(0);
+
+        try (Connection conn = Conexao.Ligacao(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, this.idturma);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.isBeforeFirst()) {
+
+                while (rs.next()) {
+                    int id = rs.getInt("disciplina_id");
+                    String nome = rs.getString("nome");
+                    String prof = rs.getString("professor");
+                    boolean op = rs.getBoolean("e_opcional");
+                    
+                    modelo.addRow(new Object[]{
+                        id,
+                        nome,
+                        prof,
+                        op
+                    });
+                }
+            }
+
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Erro ao carregar Alunos: " + e.getMessage());
+        }
+    }
 
     private void btnVoltarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVoltarActionPerformed
 
@@ -193,15 +253,86 @@ public class GerirDisciplinas extends javax.swing.JFrame {
 
     private void btnAdicionarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAdicionarActionPerformed
 
+        String nome = txtNome.getText();
+        String prof = txtProf.getText();
+        boolean op = cbOpci.isSelected();
+
+        String sql = "INSERT INTO disciplina(nome, professor,e_opcional ,turma_id) VALUES(?,?,?,?)";
+
+        try (Connection conn = Conexao.Ligacao(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, nome);
+            stmt.setString(2, prof);
+            stmt.setBoolean(3, op);
+            stmt.setInt(4, this.idturma);
+
+            int linhas = stmt.executeUpdate();
+
+            if (linhas > 0) {
+                JOptionPane.showMessageDialog(this, "Disciplina inserido com Sucesso!");
+            }
+            carregarDisciplinas();
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Erro: " + e.getMessage());
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Erro: " + e.getMessage());
+        }
+
+
     }//GEN-LAST:event_btnAdicionarActionPerformed
 
     private void btnAlterarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAlterarActionPerformed
+        if (tblDisc.getSelectionModel().isSelectionEmpty()) {
+            JOptionPane.showMessageDialog(this, "Selecione uma Disciplina!");
+        } else {
+
+            String nome = txtNome.getText();
+
+            String prof = txtNome.getText();
+
+            int linha = tblDisc.getSelectedRow();
+
+            int id = (int) tblDisc.getValueAt(linha, 0);
+
+            boolean op = cbOpci.isSelected();
+
+            String sql = "UPDATE disciplina SET nome = ?, professor = ?, e_opcional = ? WHERE disciplina_id = ?";
+
+            try (Connection conn = Conexao.Ligacao(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+                stmt.setString(1, nome);
+                stmt.setString(2, prof);
+                stmt.setBoolean(3, op);
+                stmt.setInt(4, id);
+
+                int linhas = stmt.executeUpdate();
+
+                if (linhas > 0) {
+                    JOptionPane.showMessageDialog(this, "Disciplina alterada com Sucesso!");
+                }
+                carregarDisciplinas();
+            } catch (SQLException e) {
+                JOptionPane.showMessageDialog(this, "Erro: " + e.getMessage());
+
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(this, "Erro: " + e.getMessage());
+            }
+        }
 
     }//GEN-LAST:event_btnAlterarActionPerformed
 
-    private void jCheckBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBox1ActionPerformed
+    private void cbOpciActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbOpciActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jCheckBox1ActionPerformed
+    }//GEN-LAST:event_cbOpciActionPerformed
+
+    private void txtProfActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtProfActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtProfActionPerformed
+
+    private void txtNomeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtNomeActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtNomeActionPerformed
 
     /**
      * @param args the command line arguments
@@ -243,15 +374,15 @@ public class GerirDisciplinas extends javax.swing.JFrame {
     private javax.swing.JButton btnAlterar;
     private javax.swing.JButton btnApagar;
     private javax.swing.JButton btnVoltar;
-    private javax.swing.JCheckBox jCheckBox1;
+    private javax.swing.JCheckBox cbOpci;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTextField jTextField1;
-    private javax.swing.JTextField jTextField2;
-    private javax.swing.JTable tblAlunos;
+    private javax.swing.JTable tblDisc;
+    private javax.swing.JTextField txtNome;
+    private javax.swing.JTextField txtProf;
     // End of variables declaration//GEN-END:variables
 }

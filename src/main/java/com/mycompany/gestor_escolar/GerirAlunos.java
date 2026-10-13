@@ -70,9 +70,16 @@ public class GerirAlunos extends javax.swing.JFrame {
             Class[] types = new Class [] {
                 java.lang.Integer.class, java.lang.String.class, java.lang.Float.class
             };
+            boolean[] canEdit = new boolean [] {
+                false, false, false
+            };
 
             public Class getColumnClass(int columnIndex) {
                 return types [columnIndex];
+            }
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
             }
         });
         jScrollPane1.setViewportView(tblAlunos);
@@ -271,7 +278,7 @@ public class GerirAlunos extends javax.swing.JFrame {
                 int linhas = stmt.executeUpdate();
 
                 if (linhas > 0) {
-                    JOptionPane.showMessageDialog(this, "Aluno inserido com Sucesso!");
+                    JOptionPane.showMessageDialog(this, "Aluno alterado com Sucesso!");
                 }
                 carregarAlunos();
             } catch (SQLException e) {
