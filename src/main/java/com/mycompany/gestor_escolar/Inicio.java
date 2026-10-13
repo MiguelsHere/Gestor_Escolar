@@ -108,14 +108,9 @@ public class Inicio extends javax.swing.JFrame {
 
         String sql = "INSERT INTO turma (ano) VALUES(?)";
 
-        try {
-
-            Connection conn = Conexao.Ligacao();
-
-            PreparedStatement stmt = conn.prepareStatement(sql);
+        try (Connection conn = Conexao.Ligacao(); PreparedStatement stmt = conn.prepareStatement(sql);) {
 
             stmt.setString(1, ano);
-
             int linhas = stmt.executeUpdate();
 
             if (linhas > 0) {

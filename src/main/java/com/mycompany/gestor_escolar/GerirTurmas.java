@@ -165,7 +165,6 @@ public class GerirTurmas extends javax.swing.JFrame {
 
     private void btnVoltarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVoltarActionPerformed
 
-        
         Inicio janelaI = new Inicio();
         janelaI.setLocationRelativeTo(this);
         janelaI.setVisible(true);
@@ -191,7 +190,19 @@ public class GerirTurmas extends javax.swing.JFrame {
     }//GEN-LAST:event_btnAlunosActionPerformed
 
     private void btnDisciplinasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDisciplinasActionPerformed
+        if (tblTurmas.getSelectionModel().isSelectionEmpty()) {
+            JOptionPane.showMessageDialog(this, "Selecione uma turma!");
+        } else {
+            int linha = tblTurmas.getSelectedRow();
 
+            int id = (int) tblTurmas.getValueAt(linha, 0);
+
+            GerirDisciplinas janelaGD = new GerirDisciplinas(id);
+            janelaGD.setLocationRelativeTo(this);
+            janelaGD.setVisible(true);
+
+            this.dispose();
+        }
     }//GEN-LAST:event_btnDisciplinasActionPerformed
 
     private void btnApagarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnApagarActionPerformed
