@@ -226,24 +226,26 @@ public class GerirAlunos extends javax.swing.JFrame {
 
     private void btnAdicionarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAdicionarActionPerformed
 
-        String nome = txtNome.getText();
-
-        float media = Float.parseFloat(txtMed.getText());
-
         String sql = "INSERT INTO aluno(nome_aluno, media, turma_id) VALUES(?,?,?)";
 
         try (Connection conn = Conexao.Ligacao(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+            String nome = txtNome.getText();
 
-            stmt.setString(1, nome);
-            stmt.setFloat(2, media);
-            stmt.setInt(3, this.idturma);
+            float media = Float.parseFloat(txtMed.getText());
+            if (media < 20 || media < 0) {
+                stmt.setString(1, nome);
+                stmt.setFloat(2, media);
+                stmt.setInt(3, this.idturma);
 
-            int linhas = stmt.executeUpdate();
+                int linhas = stmt.executeUpdate();
 
-            if (linhas > 0) {
-                JOptionPane.showMessageDialog(this, "Aluno inserido com Sucesso!");
+                if (linhas > 0) {
+                    JOptionPane.showMessageDialog(this, "Aluno inserido com Sucesso!");
+                }
+                carregarAlunos();
+            } else {
+                JOptionPane.showMessageDialog(this, "A media tem de estar entre 0 e 20");
             }
-            carregarAlunos();
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(this, "Erro: " + e.getMessage());
 
@@ -261,8 +263,6 @@ public class GerirAlunos extends javax.swing.JFrame {
 
             String nome = txtNome.getText();
 
-            float media = Float.parseFloat(txtMed.getText());
-
             int linha = tblAlunos.getSelectedRow();
 
             int id = (int) tblAlunos.getValueAt(linha, 0);
@@ -271,16 +271,23 @@ public class GerirAlunos extends javax.swing.JFrame {
 
             try (Connection conn = Conexao.Ligacao(); PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-                stmt.setString(1, nome);
-                stmt.setFloat(2, media);
-                stmt.setInt(3, id);
+                float media = Float.parseFloat(txtMed.getText());
 
-                int linhas = stmt.executeUpdate();
+                if (media < 20 || media < 0) {
 
-                if (linhas > 0) {
-                    JOptionPane.showMessageDialog(this, "Aluno alterado com Sucesso!");
+                    stmt.setString(1, nome);
+                    stmt.setFloat(2, media);
+                    stmt.setInt(3, id);
+
+                    int linhas = stmt.executeUpdate();
+
+                    if (linhas > 0) {
+                        JOptionPane.showMessageDialog(this, "Aluno alterado com Sucesso!");
+                    }
+                    carregarAlunos();
+                } else {
+                    JOptionPane.showMessageDialog(this, "A media tem de estar entre 0 e 20");
                 }
-                carregarAlunos();
             } catch (SQLException e) {
                 JOptionPane.showMessageDialog(this, "Erro: " + e.getMessage());
 
