@@ -165,6 +165,7 @@ public class GerirTurmas extends javax.swing.JFrame {
 
     private void btnVoltarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVoltarActionPerformed
 
+        
         Inicio janelaI = new Inicio();
         janelaI.setLocationRelativeTo(this);
         janelaI.setVisible(true);
@@ -174,15 +175,19 @@ public class GerirTurmas extends javax.swing.JFrame {
 
     private void btnAlunosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAlunosActionPerformed
 
-        int linha = tblTurmas.getSelectedRow();
+        if (tblTurmas.getSelectionModel().isSelectionEmpty()) {
+            JOptionPane.showMessageDialog(this, "Selecione uma turma!");
+        } else {
+            int linha = tblTurmas.getSelectedRow();
 
-        int id = (int) tblTurmas.getValueAt(linha, 0);
+            int id = (int) tblTurmas.getValueAt(linha, 0);
 
-        GerirAlunos janelaGA = new GerirAlunos(id);
-        janelaGA.setLocationRelativeTo(this);
-        janelaGA.setVisible(true);
+            GerirAlunos janelaGA = new GerirAlunos(id);
+            janelaGA.setLocationRelativeTo(this);
+            janelaGA.setVisible(true);
 
-        this.dispose();
+            this.dispose();
+        }
     }//GEN-LAST:event_btnAlunosActionPerformed
 
     private void btnDisciplinasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDisciplinasActionPerformed
@@ -190,21 +195,26 @@ public class GerirTurmas extends javax.swing.JFrame {
     }//GEN-LAST:event_btnDisciplinasActionPerformed
 
     private void btnApagarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnApagarActionPerformed
-        String sql = "delete FROM turma Where turma_id = ?";
+        if (tblTurmas.getSelectionModel().isSelectionEmpty()) {
+            JOptionPane.showMessageDialog(this, "Selecione uma turma!");
+        } else {
 
-        int linha = tblTurmas.getSelectedRow();
+            String sql = "delete FROM turma Where turma_id = ?";
 
-        int id = (int) tblTurmas.getValueAt(linha, 0);
+            int linha = tblTurmas.getSelectedRow();
 
-        try (Connection conn = Conexao.Ligacao(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+            int id = (int) tblTurmas.getValueAt(linha, 0);
 
-            stmt.setInt(1, id);
-            stmt.execute();
+            try (Connection conn = Conexao.Ligacao(); PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-            carregarTurmas();
-            JOptionPane.showMessageDialog(this, "Turma Apagada ");
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(this, "Erro ao apagar turma: " + e.getMessage());
+                stmt.setInt(1, id);
+                stmt.execute();
+
+                carregarTurmas();
+                JOptionPane.showMessageDialog(this, "Turma Apagada ");
+            } catch (SQLException e) {
+                JOptionPane.showMessageDialog(this, "Erro ao apagar turma: " + e.getMessage());
+            }
         }
     }//GEN-LAST:event_btnApagarActionPerformed
 
@@ -252,7 +262,7 @@ public class GerirTurmas extends javax.swing.JFrame {
     public void carregarTurmas() {
         String sql = "SELECT * FROM turma";
 
-        DefaultTableModel modelo= (DefaultTableModel) tblTurmas.getModel();
+        DefaultTableModel modelo = (DefaultTableModel) tblTurmas.getModel();
 
         modelo.setRowCount(0);
         String anoCb = (String) cbAno.getSelectedItem();
